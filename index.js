@@ -30,6 +30,14 @@ async function run() {
         await client.connect();
          
         const productCollections = client.db('EliteAutos').collection('products');
+        const brandCollection = client.db('EliteAutos').collection('brands');
+
+        //get all brands
+        app.get('/brands', async(req, res) => {
+            const cursor = brandCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
         
         // get all products
         app.get('/products', async(req, res) => {
@@ -43,6 +51,11 @@ async function run() {
             const newProduct = req.body;
             const result = await productCollections.insertOne(newProduct);
             res.send(result);
+        })
+        app.post('/brands', async(req, res) => {
+            const brand = req.body;
+            const result = await brandCollection.insertOne(brand);
+            res.send(result)
         })
 
         // Send a ping to confirm a successful connection
