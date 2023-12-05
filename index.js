@@ -30,7 +30,13 @@ async function run() {
         await client.connect();
          
         const productCollections = client.db('EliteAutos').collection('products');
-
+        
+        // get all products
+        app.get('/products', async(req, res) => {
+            const cursor = productCollections.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
 
         //create a product
         app.post('/products', async(req, res) =>{
