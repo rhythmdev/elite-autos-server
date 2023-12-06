@@ -47,9 +47,9 @@ async function run() {
             res.send(result);
         })
         // get product by id
-        app.get('/products/:id', async(req, res) => {
+        app.get('/products/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const result = await productCollections.findOne(query);
             res.send(result);
         })
@@ -65,6 +65,26 @@ async function run() {
         app.post('/brands', async (req, res) => {
             const brand = req.body;
             const result = await brandCollection.insertOne(brand);
+            res.send(result)
+        })
+        //update specific product
+        app.put('/updateProduct/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updatedProduct = req.body;
+            const product = {
+                $set: {
+                    product_name: updatedProduct.product_name,
+                    brand_name: updatedProduct.brand_name,
+                    price: updatedProduct.price,
+                    category: updatedProduct.category,
+                    image: updatedProduct.image,
+                    rating: updatedProduct.rating,
+                    description: updatedProduct.description
+                }
+            }
+            const result = await productCollections.updateOne(filter, product, options);
             res.send(result)
         })
 
