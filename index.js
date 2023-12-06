@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 6900;
@@ -28,35 +28,46 @@ async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
-         
+
         const productCollections = client.db('EliteAutos').collection('products');
         const brandCollection = client.db('EliteAutos').collection('brands');
+        const brandSliders = client.db('EliteAutos').collection('sliders')
 
         //get all brands
-        app.get('/brands', async(req, res) => {
+        app.get('/brands', async (req, res) => {
             const cursor = brandCollection.find();
             const result = await cursor.toArray();
             res.send(result);
         })
-        
+
         // get all products
-        app.get('/products', async(req, res) => {
+        app.get('/products', async (req, res) => {
             const cursor = productCollections.find();
             const result = await cursor.toArray();
             res.send(result);
         })
+        // get product by id
+        app.get('/products/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)};
+            const result = await productCollections.findOne(query);
+            res.send(result);
+        })
+
 
         //create a product
-        app.post('/products', async(req, res) =>{
+        app.post('/products', async (req, res) => {
             const newProduct = req.body;
             const result = await productCollections.insertOne(newProduct);
             res.send(result);
         })
-        app.post('/brands', async(req, res) => {
+        // for brands
+        app.post('/brands', async (req, res) => {
             const brand = req.body;
             const result = await brandCollection.insertOne(brand);
             res.send(result)
         })
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
