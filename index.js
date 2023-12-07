@@ -31,7 +31,7 @@ async function run() {
 
         const productCollections = client.db('EliteAutos').collection('products');
         const brandCollection = client.db('EliteAutos').collection('brands');
-        const brandSliders = client.db('EliteAutos').collection('sliders')
+        const cartCollection = client.db('EliteAutos').collection('cart');
 
         //get all brands
         app.get('/brands', async (req, res) => {
@@ -53,6 +53,13 @@ async function run() {
             const result = await productCollections.findOne(query);
             res.send(result);
         })
+        // get cart item by email
+        app.get('/myCart/:userEmail', async(req, res) => {
+            const userEmail = req.params.userEmail;
+            const cursor = cartCollection.find({userEmail});
+            const result = await cursor.toArray();
+            res.send(result);
+        })
 
 
         //create a product
@@ -67,6 +74,13 @@ async function run() {
             const result = await brandCollection.insertOne(brand);
             res.send(result)
         })
+        //for add to cart
+        app.post('/myCart', async(req, res) => {
+         const cartData = req.body;
+         const result = await cartCollection.insertOne(cartData);
+         res.send(result);
+        })
+
         //update specific product
         app.put('/updateProduct/:id', async (req, res) => {
             const id = req.params.id;
