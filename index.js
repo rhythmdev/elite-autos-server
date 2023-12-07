@@ -54,9 +54,9 @@ async function run() {
             res.send(result);
         })
         // get cart item by email
-        app.get('/myCart/:userEmail', async(req, res) => {
+        app.get('/myCart/:userEmail', async (req, res) => {
             const userEmail = req.params.userEmail;
-            const cursor = cartCollection.find({userEmail});
+            const cursor = cartCollection.find({ userEmail });
             const result = await cursor.toArray();
             res.send(result);
         })
@@ -75,10 +75,10 @@ async function run() {
             res.send(result)
         })
         //for add to cart
-        app.post('/myCart', async(req, res) => {
-         const cartData = req.body;
-         const result = await cartCollection.insertOne(cartData);
-         res.send(result);
+        app.post('/myCart', async (req, res) => {
+            const cartData = req.body;
+            const result = await cartCollection.insertOne(cartData);
+            res.send(result);
         })
 
         //update specific product
@@ -100,6 +100,14 @@ async function run() {
             }
             const result = await productCollections.updateOne(filter, product, options);
             res.send(result)
+        })
+        // delete item
+        app.delete('/myCart/remove', async (req, res) => {
+            const userEmail = req.query.userEmail;
+            const productId = req.query.productId;
+            const productObjectId = new ObjectId(productId);
+            const result = await cartCollection.deleteOne({ userEmail, _id: productObjectId });
+            res.send(result);
         })
 
 
